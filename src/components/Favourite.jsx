@@ -29,7 +29,7 @@ function Favourite() {
  useEffect(()=>{
   let oldFavouriteMovies = localStorage.getItem("imdb");
       oldFavouriteMovies = JSON.parse(oldFavouriteMovies);
-      setFavourites([...oldFavouriteMovies]);
+      setFavourites([...(oldFavouriteMovies|| [])]);
  },[])
   // delete movie
   const deleteMovie = (id) => {
