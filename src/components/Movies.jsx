@@ -14,10 +14,17 @@ function Movies() {
     useEffect( function(){
         (
          function(){
-                axios.get("https://api.themoviedb.org/3/trending/movie/week?api_key={your_api_key}&page="+pageNum)
+
+                let oldFavouriteMovies = localStorage.getItem("imdb");
+                oldFavouriteMovies = JSON.parse(oldFavouriteMovies);
+                setFavourites([...oldFavouriteMovies]);
+
+
+                axios.get("https://api.themoviedb.org/3/trending/movie/week?api_key=b54b3f94e334944540f50dba7f38d9f5&page="+pageNum)
                 .then((res) =>{
                     // console.table(res.data.results)
                     setMovies(res.data.results);
+                   
                 })
             }
         )()
@@ -43,15 +50,17 @@ function Movies() {
         setHovered("");
     }
    
-    const addEmoji = (id) => {
-     const newFavourites = [...favourites , id];
-     setFavourites(newFavourites);
+    const addEmoji = (movie) => {
+     const newFavourites = [...favourites ,movie];
+     setFavourites([...newFavourites]);
+     localStorage.setItem("imdb", JSON.stringify(newFavourites))
     }
-    const removeEmoji = (id) => {
+    const removeEmoji = (movie) => {
       const filteredFavourites = favourites.filter((element) =>{
-        return element !== id;
+        return element.id !== movie.id;
       })
-      setFavourites(filteredFavourites);
+      setFavourites([...filteredFavourites]);
+      localStorage.setItem("imdb", JSON.stringify(filteredFavourites));
     }
 
   return (
@@ -82,7 +91,7 @@ function Movies() {
                   }
                  key={movie.id} className='bg-center bg-cover w-[160px] h-[30vh] md: h-[40vh] md:w-[180px] m-4 rounded-xl hover:scale-110 duration-300 flex items-end relative' style={{backgroundImage:`url(https://media.themoviedb.org/t/p/original/${movie.backdrop_path})`}}>
                     <div className='p-2 bg-gray-900 absolute top-2 right-2 rounded-xl' style={{display: hovered=== movie.id ? "block":"none"}}>
-                      {favourites.includes(movie.id)? <div className='text-2xl cursor-pointer' onClick={() => {removeEmoji(movie.id)}}>❌</div>:<div className='text-2xl cursor-pointer' onClick={() => {addEmoji(movie.id)}}>❤️‍🔥</div>}
+                      {favourites.find((m) => m.id == movie.id)? <div className='text-2xl cursor-pointer' onClick={() => {removeEmoji(movie)}}>❌</div>:<div className='text-2xl cursor-pointer' onClick={() => {addEmoji(movie)}}>❤️‍🔥</div>}
                       </div>
                  <div className='text-white bg-gray-900 py-3 opacity-70 text-center w-full font-bold rounded-b-xl'>{movie.title}</div>
              </div>

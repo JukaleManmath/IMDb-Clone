@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Pagination from './Pagination'
+import { use } from 'react';
 
 let genreids = {
   28: 'Action',
@@ -101,30 +102,34 @@ let sampleMovies = [
 ]
 
 function Favourite() {
-  
+  let [favourites , setFavourites] = useState([]);
   let [genres , setGenre] = useState([]);
-  let [movies, setMovies] = useState(sampleMovies);
   let [searchItem , setSearchItem] = useState("");
   let [currentGenre , setCurrentGenre] = useState("All Genres")
   let [currentRatingOrder , setCurrentRatingOrder] = useState(0)
   let [currentPopularity , setCurrentPopularity] = useState(0)
   let [noOfElements , setNoOfElements] = useState(4);
   let [currPage , setCurrPage] = useState(1);
-
-
+  
+ useEffect(()=>{
+  let oldFavouriteMovies = localStorage.getItem("imdb");
+      oldFavouriteMovies = JSON.parse(oldFavouriteMovies);
+      setFavourites([...oldFavouriteMovies]);
+ },[])
   // delete movie
   const deleteMovie = (id) => {
-   const restOfMovies =  movies.filter((movie) =>{
+   const restOfMovies =  favourites.filter((movie) =>{
       return movie.id !== id;
     })
-    setMovies(restOfMovies);
+    setFavourites(restOfMovies);
   }
-
+ 
   useEffect(() => {
-      let temp = movies.map((movie) => genreids[movie.genre_ids[0]]);
+      let temp = favourites.map((movie) => genreids[movie.genre_ids[0]]);
       temp = new Set(temp);
       setGenre(["All Genres", ...temp]);
-  }, [])
+
+  }, [favourites])
   
   const onCurGenre = (genre) =>{
     setCurrentGenre(genre);
@@ -132,7 +137,7 @@ function Favourite() {
    }
 
     //search something
-    let searchedMovies = searchItem === ""? movies:movies.filter((movie) =>{
+    let searchedMovies = searchItem === ""? favourites:favourites.filter((movie) =>{
                             let searchItemLowerCase = searchItem.toLowerCase();
                             let lowerCaseMovieName = movie.title.toLowerCase();
                             return lowerCaseMovieName.includes(searchItemLowerCase);
@@ -187,10 +192,10 @@ function Favourite() {
   return (
     <>
     {/* Genres */}
-      <div className='mt-6 flex justify-center space-x-2'> 
+      <div className='mt-6 flex flex-wrap justify-center space-x-2 '> 
         {genres.map((genre, idx) => {
           return(
-            <button className={genre === currentGenre? `p-1 px-2 rounded-lg text-lg font-bold text-white bg-blue-400`:`p-1 px-2 bg-gray-400 rounded-lg text-lg font-bold text-white hover:bg-blue-400`} 
+            <button className={genre === currentGenre? `p-1 px-2 rounded-lg text-lg font-bold text-white bg-blue-400 transition delay-10 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105`:`p-1 px-2 bg-gray-400 rounded-lg text-lg font-bold text-white hover:bg-purple-400 transition delay-10 duration-300 ease-in-out hover:-translate-y-1 hover:scale-105`} 
             key={idx} onClick={()=>{onCurGenre(genre)}}>{genre}</button>
           )
         })}
