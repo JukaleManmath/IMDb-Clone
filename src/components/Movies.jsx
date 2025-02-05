@@ -17,7 +17,7 @@ function Movies() {
 
                 let oldFavouriteMovies = localStorage.getItem("imdb");
                 oldFavouriteMovies = JSON.parse(oldFavouriteMovies);
-                setFavourites([...oldFavouriteMovies]);
+                setFavourites([...(oldFavouriteMovies|| [])]);
 
 
                 axios.get("https://api.themoviedb.org/3/trending/movie/week?api_key=b54b3f94e334944540f50dba7f38d9f5&page="+pageNum)
